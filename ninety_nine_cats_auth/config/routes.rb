@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get 'users/new'
+  get 'users/create'
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
   resources :cats, except: :destroy
   resources :cat_rental_requests, only: [:new, :create] do
@@ -9,4 +11,5 @@ Rails.application.routes.draw do
   end
 
   root to: redirect('/cats')
+  resource :session, only: [:new, :create, :destroy]
 end

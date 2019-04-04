@@ -1,11 +1,15 @@
 class CatsController < ApplicationController
+  
+  # before_action :require_logged_in
+  # before_action :is_owner?, only: [:edit, :update]
+
   def index
     @cats = Cat.all
     render :index
   end
 
   def show
-    @cat = Cat.find(params[:id])
+    @cat = Cat.includes(:rental_requests).find(params[:id])
     render :show
   end
 
@@ -16,6 +20,7 @@ class CatsController < ApplicationController
 
   def create
     @cat = Cat.new(cat_params)
+    @cat.user_id = current_user.id
     if @cat.save
       redirect_to cat_url(@cat)
     else
@@ -26,11 +31,17 @@ class CatsController < ApplicationController
 
   def edit
     @cat = Cat.find(params[:id])
-    render :edit
+    if is_owner?(@cat) 
+      render :edit
+    # redirect_to 
+    else
+      redirect_to cats_url
+    end 
   end
 
   def update
     @cat = Cat.find(params[:id])
+    @cat.user_id = current_user.id
     if @cat.update_attributes(cat_params)
       redirect_to cat_url(@cat)
     else
